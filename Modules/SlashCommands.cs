@@ -85,4 +85,39 @@ public class SlashCommands : InteractionModuleBase<SocketInteractionContext>
 
         await Context.Interaction.FollowupAsync(embed: embed.Build());
     }
+
+    [SlashCommand("refresh-all", "Refresh all users'.")]
+    public async Task RefreshAll()
+    {
+        await Context.Interaction.DeferAsync();
+        
+        using var client = new HttpClient();
+
+        client.DefaultRequestHeaders.Accept.Clear();
+        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        client.DefaultRequestHeaders.Add("Authorization", _configuration["ADMIN_API_TOKEN"]);
+
+        
+        var response = await client.PostAsync($"{_configuration["ADMIN_API_ROOT"]}/refresh-everyone", null);
+
+        var embed = new EmbedBuilder();
+
+        if (!response.IsSuccessStatusCode) {
+            embed.WithColor(Color.Red)
+                .WithDescription($"Failed to refresh everyone.");
+            _cave.SendErrorToCave(await response.Content.ReadAsStringAsync());
+        }
+        else
+        {
+            var jsonResult = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<Dictionary<string, int>>(jsonResult);
+
+            embed.WithColor(Color.Green)
+                .WithDescription(
+                    $"Successfully refreshed everyone.\n\n**Debug Info**\nTotal Synced TSMP Users: `{result["totalSyncedTSMPUsers"]}`\nTotal Synced Discord Users: `{result["totalSyncedDiscordUsers"]}`\nTotal Failed Synced TSMP Users: `{result["totalFailedSyncedTSMPUsers"]}`\nTotal Failed Synced Discord Users: `{result["totalFailedSyncedDiscordUsers"]}`"
+                );
+        }
+        
+        await Context.Interaction.FollowupAsync(embed: embed.Build());
+    }
 }
