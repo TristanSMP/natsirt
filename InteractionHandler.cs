@@ -50,6 +50,9 @@ public class InteractionHandler
         {
             var context = new SocketInteractionContext(_client, interaction);
 
+            if (context.Guild is null)
+                return;
+
             var result = await _handler.ExecuteCommandAsync(context, _services);
 
             if (!result.IsSuccess)
