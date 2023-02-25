@@ -25,12 +25,6 @@ public class SlashCommands : InteractionModuleBase<SocketInteractionContext>
     
     public InteractionService Commands { get; set; }
 
-    [SlashCommand("ping", "pongayo")]
-    public async Task GreetUserAsync()
-    {
-        await RespondAsync("hello from see sharp.");
-    }
-
     [SlashCommand("manage-membership", "manage membership of a player (what else???)")]
     public async Task ManageMembershipAsync(
         [Summary("player", "the player to manage")]
