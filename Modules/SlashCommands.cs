@@ -15,12 +15,14 @@ public class SlashCommands : InteractionModuleBase<SocketInteractionContext>
     private InteractionHandler _handler;
     private readonly IConfiguration _configuration;
     private readonly NatsirtCave _cave;
+    private readonly AdminAPI _client;
 
-    public SlashCommands(InteractionHandler handler, IConfiguration configuration, NatsirtCave cave)
+    public SlashCommands(InteractionHandler handler, IConfiguration configuration, NatsirtCave cave, AdminAPI client)
     {
         _handler = handler;
         _configuration = configuration;
         _cave = cave;
+        _client = client;
     }
     
     public InteractionService Commands { get; set; }
@@ -35,17 +37,11 @@ public class SlashCommands : InteractionModuleBase<SocketInteractionContext>
     {
         await Context.Interaction.DeferAsync();
         
-        using var client = new HttpClient();
-
-        client.DefaultRequestHeaders.Accept.Clear();
-        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        client.DefaultRequestHeaders.Add("Authorization", _configuration["ADMIN_API_TOKEN"]);
-
         var data = new { player = player.Id.ToString(), action = action.ToString() };
         var json = JsonConvert.SerializeObject(data);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
         
-        var response = await client.PostAsync($"{_configuration["ADMIN_API_ROOT"]}/application-manage", content);
+        var response = await _client.PostAsync("/application-manage", content);
 
         var embed = new EmbedBuilder();
 
@@ -84,15 +80,8 @@ public class SlashCommands : InteractionModuleBase<SocketInteractionContext>
     public async Task RefreshAll()
     {
         await Context.Interaction.DeferAsync();
-        
-        using var client = new HttpClient();
 
-        client.DefaultRequestHeaders.Accept.Clear();
-        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        client.DefaultRequestHeaders.Add("Authorization", _configuration["ADMIN_API_TOKEN"]);
-
-        
-        var response = await client.PostAsync($"{_configuration["ADMIN_API_ROOT"]}/refresh-everyone", null);
+        var response = await _client.PostAsync("/refresh-everyone", null);
 
         var embed = new EmbedBuilder();
 
