@@ -103,4 +103,36 @@ public class SlashCommands : InteractionModuleBase<SocketInteractionContext>
         
         await Context.Interaction.FollowupAsync(embed: embed.Build());
     }
+    
+    [SlashCommand("ign-lookup", "in-game name -(moyang)> uuid -(tsmp)> discord")]
+    public async Task IGNLookupAsync(
+        [Summary("ign", "the in-game name to lookup")]
+        string ign
+    )
+    {
+        await Context.Interaction.DeferAsync();
+
+        var response = await _client.GetAsync($"{_configuration["ADMIN_API_ROOT"]}/ign-lookup?ign={ign}");
+
+        var embed = new EmbedBuilder();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            embed.WithColor(Color.Red)
+                .WithDescription($"Failed to lookup `{ign}`.");
+            _cave.SendErrorToCave(await response.Content.ReadAsStringAsync());
+        }
+        else
+        {
+            var jsonResult = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonResult);
+
+            embed.WithColor(Color.Green)
+                .WithDescription(
+                    $"Successfully looked up `{ign}`.\n\n**Debug Info**\nMinecraft UUID: `{result["minecraftUUID"]}`\nMinecraft Username: `{result["minecraftUsername"]}`\nDiscord: <@{result["discordId"]}> (`{result["discordId"]}`)"
+                );
+        }
+
+        await Context.Interaction.FollowupAsync(embed: embed.Build());
+    }
 }
