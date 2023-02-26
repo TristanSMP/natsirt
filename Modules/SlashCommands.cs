@@ -41,7 +41,7 @@ public class SlashCommands : InteractionModuleBase<SocketInteractionContext>
         var json = JsonConvert.SerializeObject(data);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
         
-        var response = await _client.PostAsync("/application-manage", content);
+        var response = await _client.PostAsync($"{_configuration["ADMIN_API_ROOT"]}/application-manage", content);
 
         var embed = new EmbedBuilder();
 
@@ -81,7 +81,7 @@ public class SlashCommands : InteractionModuleBase<SocketInteractionContext>
     {
         await Context.Interaction.DeferAsync();
 
-        var response = await _client.PostAsync("/refresh-everyone", null);
+        var response = await _client.PostAsync($"{_configuration["ADMIN_API_ROOT"]}/refresh-everyone", null);
 
         var embed = new EmbedBuilder();
 

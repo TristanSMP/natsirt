@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,5 @@ public class AdminAPI : HttpClient
         DefaultRequestHeaders.Accept.Clear();
         DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         DefaultRequestHeaders.Add("Authorization", configuration["ADMIN_API_TOKEN"]);
-        BaseAddress = new(configuration["ADMIN_API_ROOT"]);
     }
 }
