@@ -10,14 +10,14 @@ using Newtonsoft.Json;
 
 namespace Natsirt.Modules;
 
-public class SlashCommands : InteractionModuleBase<SocketInteractionContext>
+public class AdminApi : InteractionModuleBase<SocketInteractionContext>
 {
     private InteractionHandler _handler;
     private readonly IConfiguration _configuration;
     private readonly NatsirtCave _cave;
     private readonly AdminAPI _client;
 
-    public SlashCommands(InteractionHandler handler, IConfiguration configuration, NatsirtCave cave, AdminAPI client)
+    public AdminApi(InteractionHandler handler, IConfiguration configuration, NatsirtCave cave, AdminAPI client)
     {
         _handler = handler;
         _configuration = configuration;
