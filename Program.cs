@@ -17,7 +17,7 @@ public class Program
 
     private readonly DiscordSocketConfig _socketConfig = new()
     {
-        GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers | GatewayIntents.MessageContent | GatewayIntents.GuildMessages,
+        GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers | GatewayIntents.MessageContent | GatewayIntents.GuildMessages | GatewayIntents.GuildVoiceStates,
         AlwaysDownloadUsers = true,
     };
 
@@ -34,6 +34,7 @@ public class Program
             .AddSingleton<AdminAPI>()
             .AddSingleton<NatsirtCave>()
             .AddSingleton<NatsirtAI>()
+            .AddSingleton<VCGroups>()
             .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()))
             .AddSingleton<InteractionHandler>()
             .BuildServiceProvider();
@@ -53,6 +54,9 @@ public class Program
         client.Log += LogAsync;
         
         await _services.GetRequiredService<InteractionHandler>()
+            .InitializeAsync();
+        
+        await _services.GetRequiredService<VCGroups>()
             .InitializeAsync();
 
         await client.LoginAsync(TokenType.Bot, _configuration["token"]);
