@@ -17,7 +17,7 @@ public class Program
 
     private readonly DiscordSocketConfig _socketConfig = new()
     {
-        GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers,
+        GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers | GatewayIntents.MessageContent | GatewayIntents.GuildMessages,
         AlwaysDownloadUsers = true,
     };
 
@@ -33,6 +33,7 @@ public class Program
             .AddSingleton<DiscordSocketClient>()
             .AddSingleton<AdminAPI>()
             .AddSingleton<NatsirtCave>()
+            .AddSingleton<NatsirtAI>()
             .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()))
             .AddSingleton<InteractionHandler>()
             .BuildServiceProvider();

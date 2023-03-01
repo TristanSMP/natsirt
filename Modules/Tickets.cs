@@ -66,9 +66,10 @@ public class Tickets : InteractionModuleBase<SocketInteractionContext>
 
     [SlashCommand("create-ticket-entrypoint", "tickets?")]
     public async Task CreateTicketEntrypointAsync(
-        [Summary("a-string-please", "a string to please on to embed yes")] string desc)
+        [Summary("a-string-please", "a string to please on to embed yes")] string desc,
+        [Summary("channel", "the channel to send the embed to")] ITextChannel channel)
     {
-        await Context.Interaction.DeferAsync();
+        await Context.Interaction.DeferAsync(ephemeral:true);
 
         var embed = new EmbedBuilder()
             .WithColor(Color.Blue)
@@ -83,8 +84,10 @@ public class Tickets : InteractionModuleBase<SocketInteractionContext>
         var components = new ComponentBuilder()
             .WithButton(button)
             .Build();
+        
+        var message = await channel.SendMessageAsync(embed: embed, components: components);
 
-        await Context.Interaction.FollowupAsync(embed: embed, components: components);
+        await Context.Interaction.FollowupAsync($"sent [here]({message.GetJumpUrl()})", ephemeral: true);
     }
 
 
