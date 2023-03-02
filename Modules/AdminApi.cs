@@ -134,7 +134,7 @@ public class AdminApi : InteractionModuleBase<SocketInteractionContext>
 
             embed.WithColor(Color.Green)
                 .WithDescription(
-                    $"Successfully looked up `{ign}`.\n\n**Debug Info**\nMinecraft UUID: `{result["minecraftUUID"]}`\nMinecraft Username: `{result["minecraftUsername"]}`\nDiscord: <@{result["discordId"]}> (`{result["discordId"]}`)"
+                    $"Successfully looked up `{ign}`.\n\n**Debug Info**\nTSMPU Id: `{result["tsmpuId"]}`\nMinecraft UUID: `{result["minecraftUUID"]}`\nMinecraft Username: `{result["minecraftUsername"]}`\nDiscord: <@{result["discordId"]}> (`{result["discordId"]}`)"
                 );
         }
 
