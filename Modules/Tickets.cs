@@ -161,4 +161,25 @@ public class Tickets : InteractionModuleBase<SocketInteractionContext>
 
         await Context.Interaction.FollowupAsync($"removed {user.Mention} from the ticket", ephemeral: false);
     }
+    
+    [SlashCommand("delete-ticket", "delete a ticket")]
+    public async Task DeleteTicketAsync()
+    {
+        await Context.Interaction.DeferAsync();
+
+        if (Context.Channel is not ITextChannel channel)
+        {
+            await Context.Interaction.FollowupAsync("this is not a ticket channel", ephemeral: true);
+            return;
+        }
+
+        if (channel.CategoryId != _ticketCategoryId)
+        {
+            await Context.Interaction.FollowupAsync("this is not a ticket channel", ephemeral: true);
+            return;
+        }
+
+        await Context.Interaction.FollowupAsync("deleting...", ephemeral: false);
+        await channel.DeleteAsync();
+    }
 }
