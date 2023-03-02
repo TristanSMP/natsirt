@@ -57,9 +57,13 @@ public class Tickets : InteractionModuleBase<SocketInteractionContext>
             .WithDescription(
                 "Welcome to the TSMP support hotline!\nPlease explain your issue below, and a staff member will be with you shortly.")
             .Build();
+        
+        var allowedMentions = new AllowedMentions();
+        allowedMentions.RoleIds.Add(_staffPingRoleId);
+        allowedMentions.UserIds.Add(Context.User.Id);
 
 
-        await ticketChannel.SendMessageAsync($"{Context.User.Mention} <@&{_staffPingRoleId}>", embed: embed);
+        await ticketChannel.SendMessageAsync($"{Context.User.Mention} <@&{_staffPingRoleId}>", embed: embed, allowedMentions: allowedMentions);
 
         await Context.Interaction.FollowupAsync($"Created a new ticket, {ticketChannel.Mention} 😙", ephemeral: true);
     }
@@ -123,8 +127,11 @@ public class Tickets : InteractionModuleBase<SocketInteractionContext>
 
         await ticketChannel.AddPermissionOverwriteAsync(user,
             new OverwritePermissions(viewChannel: PermValue.Allow));
+        
+        var allowedMentions = new AllowedMentions();
+        allowedMentions.UserIds.Add(user.Id);
 
-        await Context.Interaction.FollowupAsync($"added {user.Mention} to the ticket", ephemeral: false);
+        await Context.Interaction.FollowupAsync($"added {user.Mention} to the ticket", ephemeral: false, allowedMentions: allowedMentions);
     }
 
     [SlashCommand("remove-from-ticket", "remove a user from a ticket")]
