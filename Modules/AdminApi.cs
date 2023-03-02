@@ -168,7 +168,7 @@ public class AdminApi : InteractionModuleBase<SocketInteractionContext>
     public async Task AddAltAsync(
         [Summary("user", "the user to add an alt to")]
         IGuildUser user,
-        [Summary("alt", "the alt to add")] string alt
+        [Summary("alt", "the alt to add (UUID NOT A USERNAME TOASTER!!)")] string alt
     )
     {
         await Context.Interaction.DeferAsync();
@@ -202,7 +202,7 @@ public class AdminApi : InteractionModuleBase<SocketInteractionContext>
     public async Task RemoveAltAsync(
         [Summary("user", "the user to remove an alt from")]
         IGuildUser user,
-        [Summary("alt", "the alt to remove")] string alt
+        [Summary("alt", "the alt to remove (UUID NOT A USERNAME TOASTER!!)")] string alt
     )
     {
         await Context.Interaction.DeferAsync();
