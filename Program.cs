@@ -35,6 +35,7 @@ public class Program
             .AddSingleton<NatsirtCave>()
             .AddSingleton<NatsirtAI>()
             .AddSingleton<VCGroups>()
+            .AddSingleton<TicketLogs>()
             .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()))
             .AddSingleton<InteractionHandler>()
             .BuildServiceProvider();
@@ -57,6 +58,9 @@ public class Program
             .InitializeAsync();
         
         await _services.GetRequiredService<VCGroups>()
+            .InitializeAsync();
+        
+        await _services.GetRequiredService<TicketLogs>()
             .InitializeAsync();
 
         await client.LoginAsync(TokenType.Bot, _configuration["token"]);
