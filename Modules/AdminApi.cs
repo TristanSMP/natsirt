@@ -28,15 +28,25 @@ public class AdminApi : InteractionModuleBase<SocketInteractionContext>
 
     [SlashCommand("manage-membership", "manage membership of a player (what else???)")]
     public async Task ManageMembershipAsync(
-        [Summary("player", "the player to manage")]
-        IGuildUser player,
         [Summary("action", "the action to perform")]
-        MembershipStatus action
+        MembershipStatus action,
+        [Summary("disc-user", "the tsmp user to manage resolved from a discord link")]
+        IGuildUser discordUser= null,
+        [Summary("player", "the tsmp player id to manage")]
+        string player = null
     )
     {
         await Context.Interaction.DeferAsync();
+        
+        var playerOrDiscordUser = player ?? discordUser?.Id.ToString();
+        
+        if (playerOrDiscordUser == null)
+        {
+            await Context.Interaction.FollowupAsync("You must provide either a player or a discord user to manage.", ephemeral: true);
+            return;
+        }
 
-        var data = new { player = player.Id.ToString(), action = action.ToString() };
+        var data = new { player = playerOrDiscordUser, action = action.ToString() };
         var json = JsonConvert.SerializeObject(data);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -47,7 +57,7 @@ public class AdminApi : InteractionModuleBase<SocketInteractionContext>
         if (!response.IsSuccessStatusCode)
         {
             embed.WithColor(Color.Red)
-                .WithDescription($"Failed to `{action.ToString().ToLower()}` {player.Mention}.");
+                .WithDescription($"Failed to `{action.ToString().ToLower()}` `{playerOrDiscordUser}`.");
             _cave.SendErrorToCave(await response.Content.ReadAsStringAsync());
         }
         else
@@ -57,7 +67,7 @@ public class AdminApi : InteractionModuleBase<SocketInteractionContext>
 
             embed.WithColor(Color.Green)
                 .WithDescription(
-                    $"Successfully {action.ToString().ToLower()}ed {player.Mention}.\n\n**Debug Info**\nMinecraft UUID: `{result["minecraftUUID"]}`\nMinecraft Username: `{result["minecraftUsername"]}`")
+                    $"Successfully {action.ToString().ToLower()}ed {playerOrDiscordUser}.\n\n**Debug Info**\nMinecraft UUID: `{result["minecraftUUID"]}`\nMinecraft Username: `{result["minecraftUsername"]}`")
                 .WithFields(new EmbedFieldBuilder()
                     .WithName("Synced TSMP User")
                     .WithValue(result["syncedUser"])
