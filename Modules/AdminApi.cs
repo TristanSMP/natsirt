@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -31,18 +32,19 @@ public class AdminApi : InteractionModuleBase<SocketInteractionContext>
         [Summary("action", "the action to perform")]
         MembershipStatus action,
         [Summary("disc-user", "the tsmp user to manage resolved from a discord link")]
-        IGuildUser discordUser= null,
+        IGuildUser discordUser = null,
         [Summary("player", "the tsmp player id to manage")]
         string player = null
     )
     {
         await Context.Interaction.DeferAsync();
-        
+
         var playerOrDiscordUser = player ?? discordUser?.Id.ToString();
-        
+
         if (playerOrDiscordUser == null)
         {
-            await Context.Interaction.FollowupAsync("You must provide either a player or a discord user to manage.", ephemeral: true);
+            await Context.Interaction.FollowupAsync("You must provide either a player or a discord user to manage.",
+                ephemeral: true);
             return;
         }
 
@@ -178,7 +180,8 @@ public class AdminApi : InteractionModuleBase<SocketInteractionContext>
     public async Task AddAltAsync(
         [Summary("user", "the user to add an alt to")]
         IGuildUser user,
-        [Summary("alt", "the alt to add (UUID NOT A USERNAME TOASTER!!)")] string alt
+        [Summary("alt", "the alt to add (UUID NOT A USERNAME TOASTER!!)")]
+        string alt
     )
     {
         await Context.Interaction.DeferAsync();
@@ -212,7 +215,8 @@ public class AdminApi : InteractionModuleBase<SocketInteractionContext>
     public async Task RemoveAltAsync(
         [Summary("user", "the user to remove an alt from")]
         IGuildUser user,
-        [Summary("alt", "the alt to remove (UUID NOT A USERNAME TOASTER!!)")] string alt
+        [Summary("alt", "the alt to remove (UUID NOT A USERNAME TOASTER!!)")]
+        string alt
     )
     {
         await Context.Interaction.DeferAsync();
@@ -247,4 +251,51 @@ public class AdminApi : InteractionModuleBase<SocketInteractionContext>
 
         await Context.Interaction.FollowupAsync(embed: embed.Build());
     }
+
+    [SlashCommand("manage-supporter", "manage supporter status on someone")]
+    public async Task ManageSupporterAsync(
+        [Summary("months-from-now", "have supporter for from now in months (0 to remove supporter)")]
+        int monthsFromNow,
+        [Summary("disc-user", "the tsmp user to manage resolved from a discord link")]
+        IGuildUser discordUser = null,
+        [Summary("player", "the tsmp player id to manage")]
+        string player = null
+    )
+    {
+        await Context.Interaction.DeferAsync();
+        var embed = new EmbedBuilder();
+        if (discordUser == null && player == null)
+        {
+            embed.WithColor(Color.Red)
+                .WithDescription("You must provide either a discord user or a player id.");
+            await Context.Interaction.FollowupAsync(embed: embed.Build());
+            return;
+        }
+
+        var data = new Dictionary<string, string>
+        {
+            { "player", discordUser?.Id.ToString() ?? player },
+            { "supporterUntil", monthsFromNow == 0 ? null : DateTime.UtcNow.AddMonths(monthsFromNow).ToString("o") }
+        };
+
+        var response = await _client.PostAsync($"{_configuration["ADMIN_API_ROOT"]}/supporter-manage",
+            new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json"));
+
+        if (!response.IsSuccessStatusCode)
+        {
+            embed.WithColor(Color.Red)
+                .WithDescription($"Failed to manage supporter status for {discordUser?.Mention ?? player}.");
+            _cave.SendErrorToCave(await response.Content.ReadAsStringAsync());
+        }
+        else
+        {
+            embed.WithColor(Color.Green)
+                .WithDescription(
+                    $"Successfully managed supporter status for {discordUser?.Mention ?? player}.");
+        }
+
+        await Context.Interaction.FollowupAsync(embed: embed.Build());
+    }
 }
+        
+        
