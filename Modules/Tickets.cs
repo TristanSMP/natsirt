@@ -12,6 +12,7 @@ public class Tickets : InteractionModuleBase<SocketInteractionContext>
     private readonly AdminAPI _client;
     private readonly IConfiguration _configuration;
     private readonly ulong _staffPingRoleId = 1054687518936793118;
+    private readonly ulong _communityManagerRoleId = 1078068239956988004;
 
     private readonly ulong _ticketCategoryId = 1072036891555266602;
     private InteractionHandler _handler;
@@ -55,17 +56,17 @@ public class Tickets : InteractionModuleBase<SocketInteractionContext>
         var embed = new EmbedBuilder()
             .WithColor(Color.Purple)
             .WithDescription(
-                "Welcome to the TSMP support hotline!\nPlease explain your issue below, and a staff member will be with you shortly.")
+                "Welcome to the TSMP support hotline!\nPlease explain your issue below, and a community manager will be with you shortly, if need be it will be escalated to the staff team.")
             .Build();
         
         var allowedMentions = new AllowedMentions();
-        allowedMentions.RoleIds.Add(_staffPingRoleId);
+        allowedMentions.RoleIds.Add(_communityManagerRoleId);
         allowedMentions.UserIds.Add(Context.User.Id);
 
 
-        await ticketChannel.SendMessageAsync($"{Context.User.Mention} <@&{_staffPingRoleId}>", embed: embed, allowedMentions: allowedMentions);
+        await ticketChannel.SendMessageAsync($"{Context.User.Mention} <@&{_communityManagerRoleId}>", embed: embed, allowedMentions: allowedMentions);
 
-        await Context.Interaction.FollowupAsync($"Created a new ticket, {ticketChannel.Mention} 😙", ephemeral: true);
+        await Context.Interaction.FollowupAsync($"Created a new ticket, {ticketChannel.Mention}", ephemeral: true);
     }
 
     [SlashCommand("create-ticket-entrypoint", "tickets?")]
