@@ -18,6 +18,7 @@ public class TicketLogs : InteractionModuleBase<SocketInteractionContext>
     private readonly ulong _staffPingRoleId = 1054687518936793118;
 
     private readonly ulong _ticketCategoryId = 1072036891555266602;
+    private readonly ulong _applicationsCategoryId = 1056793986817331241;
     private readonly ulong _ticketLogsChannelId = 1080766701601300490;
     private SocketForumChannel _ticketLogsChannel;
 
@@ -45,7 +46,7 @@ public class TicketLogs : InteractionModuleBase<SocketInteractionContext>
     {
         if (_ticketLogsChannel is not SocketForumChannel forum) return;
         if (message.Channel is not SocketTextChannel channel) return;
-        if (channel.CategoryId != _ticketCategoryId) return;
+        if (channel.CategoryId != _ticketCategoryId || channel.CategoryId != _applicationsCategoryId) return;
         if (message.Author.IsBot) return;
         
         var embed = new EmbedBuilder()
@@ -64,7 +65,7 @@ public class TicketLogs : InteractionModuleBase<SocketInteractionContext>
     {
         if (_ticketLogsChannel is not SocketForumChannel forum) return;
         if (channel is not SocketTextChannel textChannel) return;
-        if (textChannel.CategoryId != _ticketCategoryId) return;
+        if (textChannel.CategoryId != _ticketCategoryId || textChannel.CategoryId != _applicationsCategoryId) return;
         if (after.Author.IsBot) return;
         
         var embed = new EmbedBuilder()
