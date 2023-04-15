@@ -46,7 +46,7 @@ public class TicketLogs : InteractionModuleBase<SocketInteractionContext>
     {
         if (_ticketLogsChannel is not SocketForumChannel forum) return;
         if (message.Channel is not SocketTextChannel channel) return;
-        if (channel.CategoryId != _ticketCategoryId || channel.CategoryId != _applicationsCategoryId) return;
+        if (channel.CategoryId != _ticketCategoryId && channel.CategoryId != _applicationsCategoryId) return;
         if (message.Author.IsBot) return;
         
         var embed = new EmbedBuilder()
@@ -65,7 +65,7 @@ public class TicketLogs : InteractionModuleBase<SocketInteractionContext>
     {
         if (_ticketLogsChannel is not SocketForumChannel forum) return;
         if (channel is not SocketTextChannel textChannel) return;
-        if (textChannel.CategoryId != _ticketCategoryId || textChannel.CategoryId != _applicationsCategoryId) return;
+        if (textChannel.CategoryId != _ticketCategoryId && textChannel.CategoryId != _applicationsCategoryId) return;
         if (after.Author.IsBot) return;
         
         var embed = new EmbedBuilder()
